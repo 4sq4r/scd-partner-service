@@ -10,11 +10,6 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-    datasource:
-      url: jdbc:postgresql://localhost:5432/partner-service?currentSchema=public
-      username: postgres
-      password: postgres
-      driver-class-name: org.postgresql.Driver
   flyway:
     url: jdbc:postgresql://localhost:5432/partner-service?currentSchema=public
     user: postgres
@@ -25,6 +20,10 @@ spring:
       ddl-auto: update
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  api-docs.path: "/public/swagger/v3/api-docs"
+  swagger-ui.path: "/public/swagger/swagger-ui.html"
 
 logging:
   level:

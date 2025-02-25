@@ -29,7 +29,7 @@ class CompanyServiceImplTest {
     private static final Long ID = 1L;
     private static final String PHONE_NUMBER = "+77777777777";
     @Mock
-    private CompanyRepository companyRepository;
+    private CompanyRepository repository;
     @Spy
     private CompanyMapper mapper = Mappers.getMapper(CompanyMapper.class);
     @InjectMocks
@@ -54,7 +54,7 @@ class CompanyServiceImplTest {
         CompanyDTO companyDTO = Instancio.create(CompanyDTO.class);
         companyDTO.setPhone(PHONE_NUMBER);
 
-        when(companyRepository.existsByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(true);
+        when(repository.existsByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(true);
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.saveOne(companyDTO));
         //then
@@ -69,8 +69,8 @@ class CompanyServiceImplTest {
         CompanyDTO companyDTO = Instancio.create(CompanyDTO.class);
         companyDTO.setPhone(PHONE_NUMBER);
 
-        when(companyRepository.existsByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(false);
-        when(companyRepository.existsByNameIgnoreCase(companyDTO.getName())).thenReturn(true);
+        when(repository.existsByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(false);
+        when(repository.existsByNameIgnoreCase(companyDTO.getName())).thenReturn(true);
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.saveOne(companyDTO));
         //then
@@ -87,14 +87,15 @@ class CompanyServiceImplTest {
         companyDTO.setPhone(PHONE_NUMBER);
         CompanyEntity companyEntity = mapper.toEntity(companyDTO);
 
-        when(companyRepository.save(any())).thenReturn(companyEntity);
+        when(repository.save(any())).thenReturn(companyEntity);
         //when
         CompanyDTO result = underTest.saveOne(companyDTO);
         //then
-        verify(companyRepository, times(1)).save(argumentCaptor.capture());
+        verify(repository, times(1)).save(argumentCaptor.capture());
         CompanyEntity savedEntity = argumentCaptor.getValue();
 
         assertNotNull(savedEntity);
+        assertNotNull(savedEntity.getId());
         assertEquals(companyDTO.getPhone(), savedEntity.getPhone());
         assertEquals(companyDTO.getPassword(), savedEntity.getPassword());
         assertEquals(companyDTO.getName(), savedEntity.getName());
@@ -113,7 +114,7 @@ class CompanyServiceImplTest {
     @Test
     void getOne_throwsException_whenCompanyNotFound() {
         //given
-        when(companyRepository.findById(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.getOne(ID));
         //then
@@ -125,13 +126,18 @@ class CompanyServiceImplTest {
     @Test
     void getOne_returnsCompany() throws CustomException {
         //given
+        ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
         CompanyEntity companyEntity = Instancio.create(CompanyEntity.class);
         companyEntity.setId(ID);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.of(companyEntity));
+        when(repository.findById(ID)).thenReturn(Optional.of(companyEntity));
         //when
         CompanyDTO result = underTest.getOne(ID);
         //then
+        verify(repository, times(1)).findById(argumentCaptor.capture());
+        Long id = argumentCaptor.getValue();
+        assertEquals(ID, id);
+
         assertNotNull(result);
         assertEquals(ID, result.getId());
         assertNotNull(result.getName());
@@ -144,7 +150,7 @@ class CompanyServiceImplTest {
     @Test
     void deleteOne_throwsException_whenCompanyNotFound() {
         //given
-        when(companyRepository.findById(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.deleteOne(ID));
         //then
@@ -159,11 +165,11 @@ class CompanyServiceImplTest {
         CompanyEntity companyEntity = Instancio.create(CompanyEntity.class);
         companyEntity.setId(ID);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.of(companyEntity));
+        when(repository.findById(ID)).thenReturn(Optional.of(companyEntity));
         //when
         underTest.deleteOne(ID);
         //then
-        verify(companyRepository, times(1)).delete(any());
+        verify(repository, times(1)).delete(companyEntity);
     }
 
     @Test
@@ -188,7 +194,7 @@ class CompanyServiceImplTest {
         CompanyEntity companyByPhone = Instancio.create(CompanyEntity.class);
         companyByPhone.setId(2L);
 
-        when(companyRepository.findByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(Optional.of(companyByPhone));
+        when(repository.findByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(Optional.of(companyByPhone));
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.updateOne(ID, companyDTO));
         //then
@@ -207,7 +213,7 @@ class CompanyServiceImplTest {
         CompanyEntity companyByName = Instancio.create(CompanyEntity.class);
         companyByName.setId(2L);
 
-        when(companyRepository.findByNameIgnoreCase(companyDTO.getName())).thenReturn(Optional.of(companyByName));
+        when(repository.findByNameIgnoreCase(companyDTO.getName())).thenReturn(Optional.of(companyByName));
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.updateOne(ID, companyDTO));
         //then
@@ -223,7 +229,7 @@ class CompanyServiceImplTest {
         CompanyDTO companyDTO = Instancio.create(CompanyDTO.class);
         companyDTO.setPhone(PHONE_NUMBER);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.empty());
+        when(repository.findById(ID)).thenReturn(Optional.empty());
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.updateOne(ID, companyDTO));
         //then
@@ -242,11 +248,11 @@ class CompanyServiceImplTest {
         CompanyEntity companyEntity = Instancio.create(CompanyEntity.class);
         companyEntity.setId(ID);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.of(companyEntity));
+        when(repository.findById(ID)).thenReturn(Optional.of(companyEntity));
         //when
         CompanyDTO result = underTest.updateOne(ID, companyDTO);
         //then
-        verify(companyRepository, times(1)).save(argumentCaptor.capture());
+        verify(repository, times(1)).save(argumentCaptor.capture());
         CompanyEntity savedEntity = argumentCaptor.getValue();
 
         assertNotNull(savedEntity);
@@ -264,6 +270,35 @@ class CompanyServiceImplTest {
         assertEquals(savedEntity.getName(), result.getName());
         assertEquals(savedEntity.getCreatedAt(), result.getCreatedAt());
         assertEquals(savedEntity.getUpdatedAt(), result.getUpdatedAt());
+    }
+
+    @Test
+    void findEntityById_throwsException_whenEntityNotFound() {
+        //given
+        when(repository.findById(ID)).thenReturn(Optional.empty());
+        //when
+        CustomException e = assertThrows(CustomException.class, () -> underTest.findEntityById(ID));
+        //then
+        assertNotNull(e);
+        assertEquals(HttpStatus.NOT_FOUND, e.getHttpStatus());
+        assertEquals(MessageSource.COMPANY_NOT_FOUND.getText(ID.toString()), e.getMessage());
+    }
+
+    @Test
+    void findEntityById_returnsEntity() throws CustomException {
+        //given
+        ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
+        CompanyEntity companyEntity = Instancio.create(CompanyEntity.class);
+        companyEntity.setId(ID);
+        when(repository.findById(ID)).thenReturn(Optional.of(companyEntity));
+        //when
+        CompanyEntity result = underTest.findEntityById(ID);
+        //then
+        verify(repository, times(1)).findById(argumentCaptor.capture());
+        Long id = argumentCaptor.getValue();
+        assertEquals(ID, id);
+
         assertNotNull(result);
+        assertEquals(ID, result.getId());
     }
 }

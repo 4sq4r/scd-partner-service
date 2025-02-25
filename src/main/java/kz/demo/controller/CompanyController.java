@@ -7,10 +7,8 @@ import kz.demo.exception.CustomException;
 import kz.demo.model.dto.CompanyDTO;
 import kz.demo.service.CompanyService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/companies/v1")
 @RequiredArgsConstructor

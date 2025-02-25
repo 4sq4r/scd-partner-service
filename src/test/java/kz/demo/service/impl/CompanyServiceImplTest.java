@@ -8,12 +8,13 @@ import kz.demo.repository.CompanyRepository;
 import kz.demo.util.MessageSource;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CompanyServiceImplTest {
 
     private static final Long ID = 1L;
@@ -86,8 +87,6 @@ class CompanyServiceImplTest {
         companyDTO.setPhone(PHONE_NUMBER);
         CompanyEntity companyEntity = mapper.toEntity(companyDTO);
 
-        when(companyRepository.existsByPhoneIgnoreCase(companyDTO.getPhone().toLowerCase())).thenReturn(false);
-        when(companyRepository.existsByNameIgnoreCase(companyDTO.getName().toLowerCase())).thenReturn(false);
         when(companyRepository.save(any())).thenReturn(companyEntity);
         //when
         CompanyDTO result = underTest.saveOne(companyDTO);
@@ -189,8 +188,6 @@ class CompanyServiceImplTest {
         CompanyEntity companyByPhone = Instancio.create(CompanyEntity.class);
         companyByPhone.setId(2L);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.of(companyEntity));
-        when(companyRepository.existsByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(true);
         when(companyRepository.findByPhoneIgnoreCase(companyDTO.getPhone())).thenReturn(Optional.of(companyByPhone));
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.updateOne(ID, companyDTO));
@@ -210,8 +207,6 @@ class CompanyServiceImplTest {
         CompanyEntity companyByName = Instancio.create(CompanyEntity.class);
         companyByName.setId(2L);
 
-        when(companyRepository.findById(ID)).thenReturn(Optional.of(companyEntity));
-        when(companyRepository.existsByNameIgnoreCase(companyDTO.getName())).thenReturn(true);
         when(companyRepository.findByNameIgnoreCase(companyDTO.getName())).thenReturn(Optional.of(companyByName));
         //when
         CustomException e = assertThrows(CustomException.class, () -> underTest.updateOne(ID, companyDTO));

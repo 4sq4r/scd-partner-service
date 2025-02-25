@@ -12,12 +12,12 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CompanyEntity extends BaseEntity {
 
-    @Column(unique = true, length = 13)
+    @Column(unique = true, length = 13, nullable = false)
     private String phone;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column(unique = true, length = 100)
+    @Column(unique = true, length = 100, nullable = false)
     private String name;
 }

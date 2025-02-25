@@ -15,11 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 
+import static kz.demo.util.ScdStringUtils.PHONE_REGEX;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CompanyServiceImpl implements CompanyService {
-    private static final String PHONE_REGEX = "^(\\+7|7)\\d{10}$";
 
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
@@ -64,7 +65,7 @@ public class CompanyServiceImpl implements CompanyService {
         companyRepository.delete(companyEntity);
     }
 
-    private CompanyEntity findEntityById(Long id) throws CustomException {
+    public CompanyEntity findEntityById(Long id) throws CustomException {
         return companyRepository.findById(id).orElseThrow(
                 () -> CustomException.builder()
                         .httpStatus(HttpStatus.NOT_FOUND)
@@ -102,23 +103,30 @@ public class CompanyServiceImpl implements CompanyService {
 
     private void validateBeforeUpdate(Long id, CompanyDTO companyDTO) throws CustomException {
         String phone = companyDTO.getPhone();
-        Optional<CompanyEntity> optionalCompanyByPhone = companyRepository.findByPhoneIgnoreCase(companyDTO.getPhone());
-        Optional<CompanyEntity> optionalCompanyByName = companyRepository.findByNameIgnoreCase(companyDTO.getName());
 
         if (!phone.matches(PHONE_REGEX)) {
             throw CustomException.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .message(MessageSource.WRONG_PHONE_FORMAT.getText(phone))
                     .build();
-        } else if (optionalCompanyByPhone.isPresent() && !Objects.equals(optionalCompanyByPhone.get().getId(), id)) {
+        }
+
+        Optional<CompanyEntity> optionalCompanyByPhone = companyRepository.findByPhoneIgnoreCase(phone);
+
+        if (optionalCompanyByPhone.isPresent() && !Objects.equals(optionalCompanyByPhone.get().getId(), id)) {
             throw CustomException.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
-                    .message(MessageSource.COMPANY_PHONE_EXISTS.getText(companyDTO.getPhone()))
+                    .message(MessageSource.COMPANY_PHONE_EXISTS.getText(phone))
                     .build();
-        } else if (optionalCompanyByName.isPresent() && !Objects.equals(optionalCompanyByName.get().getId(), id)) {
+        }
+
+        String name = companyDTO.getName();
+        Optional<CompanyEntity> optionalCompanyByName = companyRepository.findByNameIgnoreCase(name);
+
+        if (optionalCompanyByName.isPresent() && !Objects.equals(optionalCompanyByName.get().getId(), id)) {
             throw CustomException.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
-                    .message(MessageSource.COMPANY_NAME_EXISTS.getText(companyDTO.getName()))
+                    .message(MessageSource.COMPANY_NAME_EXISTS.getText(name))
                     .build();
         }
     }

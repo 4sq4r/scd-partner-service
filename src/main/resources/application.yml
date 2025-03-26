@@ -1,0 +1,23 @@
+server:
+port: 8090
+servlet:
+context-path: /partner-service/api
+
+spring:
+  application:
+    name: scd-partner-service
+  datasource:
+    url: jdbc:postgresql://localhost:5400/partner-service?currentSchema=public
+    username: partner-service
+    password: v17461dn447f6y4w87bos
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org.hibernate.orm.connections.pooling: error

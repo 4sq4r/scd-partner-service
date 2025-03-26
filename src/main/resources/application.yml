@@ -1,7 +1,7 @@
 server:
-port: 8090
-servlet:
-context-path: /partner-service/api
+  port: 8090
+  servlet:
+    context-path: /partner-service/api
 
 spring:
   application:
@@ -17,6 +17,11 @@ spring:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    jwt:
+      issuer: scd-partner-service
+      secret: m6pG:7)jalI2Ig`ZpU5Q^1`
+      expirationHours: 1
 
 logging:
   level:

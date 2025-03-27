@@ -6,6 +6,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -55,5 +57,15 @@ public class JwtService {
 
     public boolean validateToken(String token) {
         return verifier.verify(token).getExpiresAt().after(new Date());
+    }
+
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null) {
+            return ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+
+        return "Username not found.";
     }
 }

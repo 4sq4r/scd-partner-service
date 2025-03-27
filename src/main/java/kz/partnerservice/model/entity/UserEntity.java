@@ -17,4 +17,16 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     private String password;
+
+    @Column(name = "first_name", length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", length = 100)
+    private String lastName;
+
+    @Column(name = "phone_number", length = 11, unique = true)
+    private Long phoneNumber;
+
+    @Column(name = "address")
+    private String address;
 }

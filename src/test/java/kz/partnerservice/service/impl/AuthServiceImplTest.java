@@ -25,10 +25,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
 
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static final String ENCODED_PASSWORD = "encodedPassword";
-    private static final String TOKEN = "token";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String ENCODED_PASSWORD = "encodedPassword";
+    public static final String TOKEN = "token";
 
     @Mock
     private UserRepository userRepository;

@@ -14,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static kz.partnerservice.util.ScdStringUtil.PHONE_PATTERN;
+import static kz.partnerservice.util.StringUtils.PHONE_PATTERN;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
-
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -29,12 +28,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = CustomException.class)
     public UserDTO updateOne(UserDTO userDTO) throws CustomException {
-        String username = jwtService.getUsername();
         userDTO.setFirstName(userDTO.getFirstName().trim());
         userDTO.setLastName(userDTO.getLastName().trim());
         userDTO.setAddress(userDTO.getAddress().trim());
 
-        UserEntity userEntity = findEntityByUsername(username);
+        UserEntity userEntity = getUserEntityFromContext();
         validatePhoneNumber(userEntity.getId(), userDTO.getPhoneNumber());
         userEntity.setFirstName(userDTO.getFirstName());
         userEntity.setLastName(userDTO.getLastName());
@@ -45,9 +43,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(userEntity);
     }
 
-    private UserEntity findEntityByUsername(String username) throws CustomException {
-        return userRepository.findByUsernameIgnoreCase(username).orElseThrow(() ->
-                CustomException.builder()
+    @Transactional(readOnly = true)
+    public UserEntity getUserEntityFromContext() throws CustomException {
+        String username = jwtService.getUsername();
+
+        return userRepository.findByUsernameIgnoreCase(username).orElseThrow(
+                () -> CustomException.builder()
                         .httpStatus(BAD_REQUEST)
                         .message(MessageSource.USER_NOT_FOUND.getText(username))
                         .build());

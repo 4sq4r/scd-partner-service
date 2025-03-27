@@ -29,7 +29,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    private static final String USERNAME = "username";
+    public static final String USERNAME = "username";
 
     @Mock
     private UserRepository userRepository;

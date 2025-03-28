@@ -60,10 +60,8 @@ class AuthServiceImplTest {
         ArgumentCaptor<UserEntity> userEntityArgumentCaptor = ArgumentCaptor.forClass(UserEntity.class);
         when(userRepository.existsByUsernameIgnoreCase(authDTO.getUsername())).thenReturn(false);
         when(passwordEncoder.encode(authDTO.getPassword())).thenReturn(ENCODED_PASSWORD);
-
         //when
         underTest.signUp(authDTO);
-
         //then
         verify(userRepository, times(1)).save(userEntityArgumentCaptor.capture());
         UserEntity savedUserEntity = userEntityArgumentCaptor.getValue();
@@ -74,10 +72,8 @@ class AuthServiceImplTest {
     void signUp_ShouldThrowException_WhenUsernameExists() {
         // given
         when(userRepository.existsByUsernameIgnoreCase(authDTO.getUsername())).thenReturn(true);
-
         // when
         CustomException exception = assertThrows(CustomException.class, () -> underTest.signUp(authDTO));
-
         // then
         assertEquals(BAD_REQUEST, exception.getHttpStatus());
         assertEquals(USERNAME_ALREADY_EXISTS.getText(authDTO.getUsername()), exception.getMessage());
@@ -90,10 +86,8 @@ class AuthServiceImplTest {
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(jwtService.generateToken(authentication)).thenReturn(TOKEN);
-
         //when
         AuthDTO result = underTest.signIn(authDTO);
-
         //then
         assertEquals(TOKEN, result.getToken());
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));

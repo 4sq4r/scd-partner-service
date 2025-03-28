@@ -43,6 +43,8 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
     testImplementation("org.instancio:instancio-junit:5.4.1")
+
+    implementation("io.minio:minio:8.5.17")
 }
 
 tasks.named('test') {

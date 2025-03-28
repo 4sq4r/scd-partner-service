@@ -1,10 +1,10 @@
 package kz.partnerservice.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import static jakarta.persistence.CascadeType.REMOVE;
 
 @Data
 @Entity
@@ -29,4 +29,7 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "address")
     private String address;
+
+    @OneToOne(mappedBy = "user", optional = false, cascade = REMOVE)
+    private UserMediaFileEntity mediaFile;
 }

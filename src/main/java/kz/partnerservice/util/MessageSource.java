@@ -7,9 +7,9 @@ public enum MessageSource {
     PHONE_NUMBER_EXISTS("Phone number already exists, phone number: %s"),
     WRONG_PHONE_NUMBER_FORMAT("Wrong phone number format"),
     JOB_ALREADY_EXISTS("Job already exists"), JOB_NOT_FOUND("Job not found, id: %s"),
-    ACCESS_DENIED("Access denied")
-
-    ;
+    ACCESS_DENIED("Access denied"),
+    MINIO_BUCKET_NOT_EXIST("Minio bucket is not exists, bucket: %s"),
+    IMAGE_ALREADY_EXISTS("Image already exists");
 
     private final String text;
 

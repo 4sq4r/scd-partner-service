@@ -23,6 +23,22 @@ spring:
       secret: m6pG:7)jalI2Ig`ZpU5Q^1`
       expirationHours: 1
 
+minio:
+  url: http://localhost:9090
+  bucket: partner-service
+  access-key: schedy
+  secret-key: x1p398h14314x3m
+  auto-create-bucket: true
+  connect-timeout: 10000
+  write-timeout: 60000
+  read-timeout: 10000
+  folder-names:
+    users: /s3/partner-service/users
+    jobs: /s3/partner-service/jobs
+  actual-minio-urls:
+    users: /users
+    jobs: /jobs
+
 logging:
   level:
     org.hibernate.orm.connections.pooling: error
